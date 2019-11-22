@@ -1,0 +1,9 @@
+/* Enter your custom styles here */
+@font-face {
+    font-family: 'SAP\2dicons';
+    src: url(font/SAP-icons.ttf);
+}
+
+.listItemStyle {
+    padding: 5px 10px;
+}

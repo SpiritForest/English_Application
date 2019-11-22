@@ -1,0 +1,65 @@
+<mvc:View controllerName="eng.English.controller.MainPage" xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+	xmlns="sap.m">
+	<Shell id="shell">
+		<App id="app" class="sapUiSizeCozy">
+			<pages>
+				<Page id="page" title="{i18n>title}">
+					<content>
+						<Table id="table" items="{oViewModel>/ListItems}" growing="true" updateFinished=".onTableUpdated">
+							<headerToolbar>
+								<Toolbar>
+									<Label text="Select your learning mode:" />
+									<Button id="study" text="Study"
+										type="{= ${oViewModel>/learnMode} === 'Study' ? 'Emphasized' : 'Ghost'}"
+										press=".onSelectModePress($event, ${$source>/text})" />
+									<Button id="exam" text="Exam"
+										type="{= ${oViewModel>/learnMode} === 'Exam' ? 'Emphasized' : 'Ghost'}"
+										press=".onSelectModePress($event, ${$source>/text})" />
+									<ToolbarSpacer/>
+									<Button id="download" icon="sap-icon://download" press=".onDownload"/>
+									<Button id="upload" icon="sap-icon://upload" press=".onUpload"/>
+								</Toolbar>
+							</headerToolbar>
+							<columns>
+								<Column>
+									<Text text="Russian" />
+								</Column>
+								<Column visible="{= ${oViewModel>/learnMode} === 'Study' ? true : false}">
+									<Text text="Transcription" />
+								</Column>
+								<Column visible="{= ${oViewModel>/learnMode} === 'Study' ? true : false}">
+									<Text text="English" />
+								</Column>
+								<Column width="7%" visible="{= ${oViewModel>/learnMode} === 'Study' ? true : false}">
+									<Text text="Samples" />
+								</Column>
+								<Column width="5%" visible="{= ${oViewModel>/learnMode} === 'Study' ? true : false}">
+									<Text text="Audio" />
+								</Column>
+								<Column visible="{= ${oViewModel>/learnMode} === 'Study' ? false : true}">
+									<Text text="Result"/>
+								</Column>
+							</columns>
+							<items>
+								<ColumnListItem>
+									<cells>
+										<Title text="{oViewModel>sRu}" />						
+										<Title text="{oViewModel>sTranscription}" />
+										<Title text="{oViewModel>sEn}" />
+										<Button text="Samples" press=".onShowSamples"
+											enabled="{= !!${oViewModel>sExample}}"
+											type="{= !!${oViewModel>sExample} ? 'Ghost' : 'Reject'}" />
+										<Button icon="sap-icon://media-play" press=".onPlay"
+											enabled="{= !!${oViewModel>sAudioPath}}"
+											type="{= !!${oViewModel>sAudioPath} ? 'Ghost' : 'Reject'}" />
+										<Input id="result" placeholder="Type your response here" liveChange=".onInputLiveChange($event, ${$parameters>/value})"/>
+									</cells>
+								</ColumnListItem>
+							</items>
+						</Table>
+					</content>
+				</Page>
+			</pages>
+		</App>
+	</Shell>
+</mvc:View>
