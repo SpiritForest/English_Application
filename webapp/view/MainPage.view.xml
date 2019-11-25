@@ -39,6 +39,9 @@
 								<Column visible="{= ${oViewModel>/learnMode} === 'Study' ? false : true}">
 									<Text text="Result"/>
 								</Column>
+								<Column visible="{= ${oViewModel>/learnMode} === 'Study' ? false : true}">
+									<Text text="Submit"/>
+								</Column>
 							</columns>
 							<items>
 								<ColumnListItem>
@@ -52,7 +55,8 @@
 										<Button icon="sap-icon://media-play" press=".onPlay"
 											enabled="{= !!${oViewModel>sAudioPath}}"
 											type="{= !!${oViewModel>sAudioPath} ? 'Ghost' : 'Reject'}" />
-										<Input id="result" placeholder="Type your response here" liveChange=".onInputLiveChange($event, ${$parameters>/value})"/>
+										<Input id="result" placeholder="Type your response here"/>
+										<Button text="Submit answer" press=".onSubmitAnswer"/>
 									</cells>
 								</ColumnListItem>
 							</items>
