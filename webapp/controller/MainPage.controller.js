@@ -20,6 +20,7 @@ sap.ui.define([
 		onInit: function () {
 			this.oViewModel = models.createViewModel();
 			this.getView().setModel(this.oViewModel, "oViewModel");
+			debugger;
 		},
 
 		onBeforeRendering: function () {
@@ -174,7 +175,20 @@ sap.ui.define([
 			if (sEn === sInputValue) {
 				oInput.setValueState("Success");
 				oInput.setEditable(false);
+				this.saveAsLearned(sEn);
 				// some Callback Function should be here
+			}
+		},
+
+		saveAsLearned: function(sEn) {
+			var aLearnedWords = [];
+			var sLearnedWords = JSON.stringify(aLearnedWords);
+			if (window.localStorage.getItem("sLearnedWords")) {
+				window.localStorage.setItem("sLearnedWords", sLearnedWords);
+			} else {
+				sLearnedWords = window.localStorage.getItem("sLearnedWords");
+				aLearnedWords = JSON.parse(sLearnedWords);
+				aLearnedWords.push(sEn);
 			}
 		},
 

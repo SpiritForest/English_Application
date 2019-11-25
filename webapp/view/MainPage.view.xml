@@ -21,6 +21,9 @@
 								</Toolbar>
 							</headerToolbar>
 							<columns>
+								<Column visible="{= ${oViewModel>/learnMode} === 'Study' ? true : false}">
+									<Text text="Image" />
+								</Column>
 								<Column>
 									<Text text="Russian" />
 								</Column>
@@ -43,6 +46,7 @@
 							<items>
 								<ColumnListItem>
 									<cells>
+										<Image width="8rem" src="{oViewModel>sImagePath}"/>
 										<Title text="{oViewModel>sRu}" />						
 										<Title text="{oViewModel>sTranscription}" />
 										<Title text="{oViewModel>sEn}" />
