@@ -21,9 +21,6 @@
 								</Toolbar>
 							</headerToolbar>
 							<columns>
-								<Column visible="{= ${oViewModel>/learnMode} === 'Study' ? true : false}">
-									<Text text="Image" />
-								</Column>
 								<Column>
 									<Text text="Russian" />
 								</Column>
@@ -42,11 +39,11 @@
 								<Column visible="{= ${oViewModel>/learnMode} === 'Study' ? false : true}">
 									<Text text="Result"/>
 								</Column>
+								<!-- <Column vn -->
 							</columns>
 							<items>
 								<ColumnListItem>
 									<cells>
-										<Image width="8rem" src="{oViewModel>sImagePath}"/>
 										<Title text="{oViewModel>sRu}" />						
 										<Title text="{oViewModel>sTranscription}" />
 										<Title text="{oViewModel>sEn}" />
@@ -56,7 +53,8 @@
 										<Button icon="sap-icon://media-play" press=".onPlay"
 											enabled="{= !!${oViewModel>sAudioPath}}"
 											type="{= !!${oViewModel>sAudioPath} ? 'Ghost' : 'Reject'}" />
-										<Input id="result" placeholder="Type your response here" liveChange=".onInputLiveChange($event, ${$parameters>/value})"/>
+										<Input id="result" submit=".onSubmitAnswer" placeholder="Type your response here"/>
+										<!-- <Button text="Submit answer" press=".onSubmitAnswer"/> -->
 									</cells>
 								</ColumnListItem>
 							</items>
