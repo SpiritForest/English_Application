@@ -1,0 +1,38 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+   <Dialog id="cardDialog" class="sapUiContentPadding" contentWidth="500px">
+      <!-- <beginButton>
+         <Button text="some" />
+      </beginButton> -->
+      <customHeader>
+         <Toolbar>
+            <Title text="Words left: {/iWordsLeft}"/>
+         </Toolbar>
+      </customHeader>
+      <endButton>
+         <Button text="Exit" type="Transparent" press=".onExitExam" />
+      </endButton>
+      <content>
+      <VBox>
+         <HBox alignItems="End" justifyContent="Center">
+            <!-- <VBox>
+               <Button text="left" />
+            </VBox> -->
+            <VBox alignItems="Center" width="200px">
+               <Image src="{/sImagePath}"/>
+               <Title text="{/sRu}" />
+               <Input value="{/answer}" submit=".onSubmitExamAnswer" width="200px"/>
+            </VBox>
+            <VBox>
+               <Button icon="sap-icon://initiative" press=".getRandomWord" class="sapUiTinyMarginBegin"/>
+            </VBox>
+         </HBox>
+         <HBox visible="{/bShowAnswer}" alignItems="Center" justifyContent="SpaceAround">
+            <Title text="{/sEn}"/>
+            <Title text="{/sTranscription}"/>
+            <Button icon="sap-icon://sound" press=".onPlayInDialog"/>
+            <Button text="show examples"/>
+         </HBox>
+      </VBox>
+      </content>
+   </Dialog>
+</core:FragmentDefinition>

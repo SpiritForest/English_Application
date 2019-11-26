@@ -17,6 +17,10 @@ sap.ui.define([
 				"ListItems": [],
 				"learnMode": "Study"
 			});
+		},
+		
+		createDialogExamModel: function(obj){
+			return new JSONModel(obj);
 		}
 
 	};

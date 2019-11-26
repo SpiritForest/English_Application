@@ -15,6 +15,7 @@
 									<Button id="exam" text="Exam"
 										type="{= ${oViewModel>/learnMode} === 'Exam' ? 'Emphasized' : 'Ghost'}"
 										press=".onSelectModePress($event, ${$source>/text})" />
+									<Button text="show fragment" press=".onShowFragment"/>
 									<ToolbarSpacer/>
 									<Button id="download" icon="sap-icon://download" press=".onDownload"/>
 									<Button id="upload" icon="sap-icon://upload" press=".onUpload"/>

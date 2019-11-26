@@ -1,22 +1,18 @@
 sap.ui.define([
-	"sap/ui/core/mvc/Controller",
+	"./BaseController",
 	"../asset/vocabulary/dataJSON",
 	"../model/models",
-	"sap/m/Popover",
-	"sap/m/Dialog",
-	"sap/m/List",
-	"sap/m/CustomListItem",
-	"sap/m/Button",
-	"sap/ui/core/HTML",
 	"sap/m/MessageToast",
 	"sap/ui/core/util/Export",
 	"sap/ui/core/util/ExportTypeCSV",
 	"sap/ui/core/util/ExportColumn",
 	"sap/ui/core/util/ExportCell",
-], function (Controller, data, models, Popover, Dialog, List, CustomListItem, Button, HTML, MessageToast, Export, ExportTypeCSV, ExportColumn, ExportCell) {
+	"../utils/ReviseLogic"
+], function (BaseController, data, models, MessageToast, Export, ExportTypeCSV, ExportColumn, ExportCell, ReviseLogic) {
 	"use strict";
 
-	return Controller.extend("eng.English.controller.MainPage", {
+	return BaseController.extend("eng.English.controller.MainPage", {
+		ReviseLogic: ReviseLogic,
 
 		onInit: function () {
 			this.oViewModel = models.createViewModel();
@@ -48,9 +44,13 @@ sap.ui.define([
 			});
 		},
 
-		onPlay: function (oEvent) {
-			var sPath = oEvent.getSource().getParent().getBindingContextPath();
-			var sAudio = this.oViewModel.getProperty(sPath).sAudioPath;
+		onPlay: function (oEvent, sAudioSRC) {
+			if (!sAudioSRC) {
+				var sPath = oEvent.getSource().getParent().getBindingContextPath();
+				var sAudio = this.oViewModel.getProperty(sPath).sAudioPath;
+			} else {
+				sAudio = sAudioSRC;
+			}
 			if (sAudio) {
 				var oAudio;
 				if (document.getElementById("audioTag")) {
@@ -67,89 +67,6 @@ sap.ui.define([
 			}
 		},
 
-		_firsLetterToUpperCase: function (str) {
-			var sResult, array;
-			if (typeof str === "string") {
-				array = [...str];
-				array[0] = array[0].toUpperCase();
-				sResult = array.join("");
-			}
-			return sResult;
-		},
-
-		//========================================================================================
-		// LIST in the dialog
-		//========================================================================================
-		// this function usd to return string for sap.ui.core.HTML, other words tag in string rep-
-		// resentation
-		_getCustomListItemContent: function (selected, str) {
-			var sText, strStrong, substr;
-			substr = str.match(new RegExp(selected, "gi"));
-			if (substr) {
-				substr = substr[0];
-			};
-			strStrong = str.replace(new RegExp(selected, "gi"), "<strong>" + substr + "</strong>");
-			return "<p class='sapUiSmallMarginBeginEnd'>" + strStrong + "</p>";
-		},
-
-		// returns sap.m.List with filled Data, the Data should be an array or string
-		_getListWithData: function (examples, selected) {
-			var oContent, sText;
-			// if Data is an array
-			if (Array.isArray(examples)) {
-				oContent = examples.map((value, index, arr) => {
-					var str = ++index + ") " + this._firsLetterToUpperCase(value);
-					var pTag = this._getCustomListItemContent(selected, str);
-					return new CustomListItem({
-						content: new HTML({
-							content: pTag
-						})
-					})
-				});
-			}
-			// if Data is not empty string
-			else if (examples) {
-				sText = this._firsLetterToUpperCase(examples);
-				oContent = new CustomListItem({
-					content: new HTML({
-						content: this._getCustomListItemContent(selected, sText)
-					})
-				})
-			}
-			return new List("dialogList", {
-				items: oContent
-			});
-		},
-
-		//========================================================================================
-		// Dialog
-		//========================================================================================
-
-		_getDialog: function (oContent, selected) {
-			var iContentLength = oContent.getItems().length;
-			var sTitleUpperCase = this._firsLetterToUpperCase(selected);
-
-			// Show Dialog
-			if (!this.oDialog) {
-				this.oDialog = new Dialog("Dialog", {
-					showHeader: true,
-					title: sTitleUpperCase,
-					content: oContent,
-					endButton: new Button({
-						text: "Close",
-						type: "Emphasized",
-						press: this.onDBClose.bind(this)
-					}),
-				});
-				this.getView().addDependent(this.oDialog);
-			} else {
-				this.oDialog.setTitle(sTitleUpperCase);
-				this.oDialog.destroyContent();
-				this.oDialog.addContent(oContent);
-			}
-			return this.oDialog;
-		},
-
 		onShowSamples: function (oEvent) {
 			var sPath = oEvent.getSource().getParent().getBindingContextPath();
 			var oModel = this.oViewModel.getProperty(sPath);
@@ -159,13 +76,6 @@ sap.ui.define([
 			oDialog.open();
 		},
 
-		onDBClose: function () {
-			// destroy content method is needed for avoid recreate items, such as list
-			// in my case there was an issue with duplicate id 'dialogList' in List
-			this.oDialog.destroyContent();
-			this.oDialog.close();
-		},
-
 		onSelectModePress: function (oEvent, sBTText) {
 			this._onLearnChange();
 			this.oViewModel.setProperty("/learnMode", sBTText);
@@ -173,81 +83,37 @@ sap.ui.define([
 		},
 
 		_onLearnChange: function () {
-			var sMode = this.oViewModel.getProperty("/learnMode");
-		},
-
-		_setNewDateOfRevise: function (iNumberOfRevise) {
-			var oReviseObject = {};
-			var iDay = 3600 * 1000 * 24;
-			switch (iNumberOfRevise) {
-				case 1:
-					oReviseObject = {
-						nextReviseDate: new Date().getTime() + iDay * 1
-					};
-					break;
-				case 2:
-					oReviseObject = {
-						nextReviseDate: new Date().getTime() + iDay * 1
-					};
-					break;
-				case 3:
-					oReviseObject = {
-						nextReviseDate: new Date().getTime() + iDay * 5
-					};
-					break;
-				case 4:
-					oReviseObject = {
-						nextReviseDate: new Date().getTime() + iDay * 23
-					};
-					break;
-			};
-			oReviseObject.numberOfRevise = iNumberOfRevise + 1;
-			return oReviseObject;
-		},
-
-		_setNextRevise: function (iIndex, bReNew) {
-			var aToRevise = [];
-			var iNumberOfWord = iIndex;
-			if (!window.localStorage.getItem("aToRevise")) {
-				window.localStorage.setItem("aToRevise", JSON.stringify(aToRevise));
-			}
-			aToRevise = JSON.parse(window.localStorage.getItem("aToRevise"));
-			debugger;
-			if (bReNew) {
-				aToRevise[iNumberOfWord] = {
-					nextReviseDate: new Date().getTime(),
-					numberOfRevise: 1,
-				};
-			} else if (aToRevise[iNumberOfWord]) {
-				aToRevise[iNumberOfWord] = this._setNewDateOfRevise(aToRevise[iNumberOfWord].numberOfRevise);
-			} else {
-				aToRevise[iNumberOfWord] = {
-					nextReviseDate: new Date().getTime() + 1000 * 3600 * 24,
-					numberOfRevise: 1,
-				};
-			}
-
-			window.localStorage.setItem("aToRevise", JSON.stringify(aToRevise))
+			this.oViewModel.getProperty("/learnMode");
 		},
 
 		onSubmitAnswer: function (oEvent) {
 			var row = oEvent.getSource().getParent();
 			var sPath = row.getBindingContextPath();
-			var obj = this.oViewModel.getProperty(sPath); 
+			var obj = this.oViewModel.getProperty(sPath);
 			var iIndex = data.indexOf(obj);
-			var sEn = data[iIndex].sEn.toLowerCase();
 			var sInputValue = row.getCells()[5].getValue();
+			var sEn = data[iIndex].sEn.toLowerCase();
+			this._checkAnswer(sEn, sInputValue, iIndex);
+		},
+
+		_checkAnswer: function (sEnglish, sInputValue, iIndex) {
+			var bSuccess = false;
+			sEnglish = sEnglish.toLowerCase();
 			if (sInputValue) {
 				sInputValue = sInputValue.toLowerCase();
 			} else {
 				sInputValue = "";
 			}
-			if (sEn === sInputValue) {
-				this._setNextRevise(iIndex);
+			if (sEnglish === sInputValue) {
+				bSuccess = true;
+				this.show("Right!")
+				this.ReviseLogic.setNextRevise(iIndex);
 			} else {
-				this._setNextRevise(iIndex, true);
+				this.show("Wrong");
+				this.ReviseLogic.setNextRevise(iIndex, true);
 			}
 			this.oViewModel.setProperty("/ListItems", this._updateData());
+			return bSuccess;
 		},
 
 		_getColumns: function (sPath) {
@@ -318,6 +184,50 @@ sap.ui.define([
 		_handleData: function (sResult) {
 			this.end = new Date();
 			console.log(this.end - this.start + " ms");
+		},
+
+		onShowFragment: function () {
+			this.oCardDialog = this._getWordDialog();
+			this.oCardDialog.open();
+			this.getRandomWord();
+		},
+
+		getRandomWord: function () {
+			var aUnlearnedWords = this.oViewModel.getProperty("/ListItems");
+			var randomizer = function (aLength) {
+				return Math.round(Math.random() * aLength);
+			}
+			var iRand = randomizer(aUnlearnedWords.length);
+			var oDialogModel = models.createDialogExamModel(aUnlearnedWords[iRand]);
+			// oDialogModel.setProperty("/sLearningWord", aUnlearnedWords[iRand]);
+			oDialogModel.setProperty("/answer", "");
+			oDialogModel.setProperty("/bShowAnswer", false);
+			oDialogModel.setProperty("/iIndex", iRand);
+			oDialogModel.setProperty("/iCouterPress", 1);
+			oDialogModel.setProperty("/iWordsLeft", aUnlearnedWords.length);
+			this.oCardDialog.setModel(oDialogModel);
+		},
+
+		onSubmitExamAnswer: function (oEvent) {
+			var oModelData = this.oCardDialog.getModel();
+			var sEnglish = oModelData.getProperty("/sEn");
+			var iIndex = oModelData.getProperty("/iIndex");
+			var sInputValue = oEvent.getSource().getValue();
+			var sAudioSRC = oModelData.getProperty("/sAudioPath");
+			var bSuccess = this._checkAnswer(sEnglish, sInputValue, iIndex);
+			var iCounterPress = oModelData.getProperty("/iCouterPress");
+			// if the input same with the english word, invoke getRundomWord function	
+			if (bSuccess || iCounterPress > 1) {
+				this.getRandomWord();
+			} else {
+				this.onPlay(null, sAudioSRC);
+				oModelData.setProperty("/iCouterPress", iCounterPress + 1);
+				oModelData.setProperty("/bShowAnswer", true);
+			}
+		},
+		onPlayInDialog: function(oEvent) {
+			var sAudioSRC = oEvent.getSource().getModel().getData().sAudioPath;
+			this.onPlay(null, sAudioSRC);
 		}
 	});
 });
